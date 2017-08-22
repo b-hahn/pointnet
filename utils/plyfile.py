@@ -280,6 +280,7 @@ class PlyData(object):
         (must_close, stream) = _open_stream(stream, 'read')
         try:
             data = PlyData._parse_header(stream)
+            print data
             for elt in data:
                 elt._read(stream, data.text, data.byte_order)
         finally:

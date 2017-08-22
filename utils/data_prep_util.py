@@ -58,7 +58,7 @@ def batch_mkdir(output_folder, subdir_list):
 
 # Write numpy array data and label to h5_filename
 def save_h5_data_label_normal(h5_filename, data, label, normal, 
-		data_dtype='float32', label_dtype='uint8', noral_dtype='float32'):
+		data_dtype='float32', label_dtype='uint8', normal_dtype='float32'):
     h5_fout = h5py.File(h5_filename)
     h5_fout.create_dataset(
             'data', data=data,
@@ -118,8 +118,24 @@ def load_h5(h5_filename):
 # Load PLY file
 def load_ply_data(filename, point_num):
     plydata = PlyData.read(filename)
+    # print "read!"
     pc = plydata['vertex'].data[:point_num]
     pc_array = np.array([[x, y, z] for x,y,z in pc])
+    return pc_array
+
+# Load PLY file with RGB values
+def load_ply_data_rgb(filename, point_num):
+    plydata = PlyData.read(filename)
+    pc = plydata['vertex'].data[:point_num]
+    pc_array = np.array([[x, y, z, r, g, b] for x, y, z, r, g, b in pc])
+    return pc_array
+
+# Load PLY file with RGB values
+def load_ply_data_rgba(filename, point_num):
+    plydata = PlyData.read(filename)
+    pc = plydata['vertex'].data[:point_num]
+    # ignore the 'a' values
+    pc_array = np.array([[x, y, z, r, g, b] for x, y, z, r, g, b, a in pc])
     return pc_array
 
 # Load PLY file
