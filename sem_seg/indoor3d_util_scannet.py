@@ -185,7 +185,7 @@ def room2blocks(data, label, num_point, block_size=1.0, stride=1.0,
        xcond = (data[:,0]<=xbeg+block_size) & (data[:,0]>=xbeg)
        ycond = (data[:,1]<=ybeg+block_size) & (data[:,1]>=ybeg)
        cond = xcond & ycond
-       if np.sum(cond) < 2: # discard block if there are less than 100 pts.
+       if np.sum(cond) < 100: # discard block if there are less than 100 pts.
            continue
        
        block_data = data[cond, :]
@@ -224,7 +224,7 @@ def room2blocks_wrapper(data_label_filename, num_point, block_size=1.0, stride=1
     return room2blocks_plus(data_label, num_point, block_size, stride,
                             random_sample, sample_num, sample_aug)
 
-def room2blocks_plus_normalized(data_label, num_point, block_size, stride,
+def room2blocks_plus_normalized(num_point, block_size, stride,
                                 random_sample, sample_num, sample_aug):
     """ room2block, with input filename and RGB preprocessing.
         for each block centralize XYZ, add normalized XYZ as 678 channels
@@ -253,14 +253,16 @@ def room2blocks_plus_normalized(data_label, num_point, block_size, stride,
 
 def room2blocks_wrapper_normalized(data_label_filename, num_point, block_size=1.0, stride=1.0,
                                    random_sample=False, sample_num=None, sample_aug=1):
-    if data_label_filename[-3:] == 'txt':
-        data_label = np.loadtxt(data_label_filename)
-    elif data_label_filename[-3:] == 'npy':
-        data_label = np.load(data_label_filename)
-    else:
-        print('Unknown file type! exiting.')
-        exit()
-    return room2blocks_plus_normalized(data_label, num_point, block_size, stride,
+    # if data_label_filename[-3:] == 'txt':
+    #     data_label = np.loadtxt(data_label_filename)
+    # elif data_label_filename[-3:] == 'npy':
+    #     data_label = np.load(data_label_filename)
+    # else:
+    #     print('Unknown file type! exiting.')
+    #     exit()
+    # return room2blocks_plus_normalized(data_label, num_point, block_size, stride,
+    #                                    random_sample, sample_num, sample_aug)
+    return room2blocks_plus_normalized(num_point, block_size, stride,
                                        random_sample, sample_num, sample_aug)
 
 def room2samples(data, label, sample_num_point):
