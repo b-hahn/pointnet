@@ -15,7 +15,7 @@ import data_prep_util
 parser = argparse.ArgumentParser()
 parser.add_argument('--gpu', type=int, default=0, help='GPU to use [default: GPU 0]')
 parser.add_argument('--batch_size', type=int, default=1, help='Batch Size during training [default: 1]')
-parser.add_argument('--num_point', type=int, default=4096, help='Point number [default: 4096]')
+parser.add_argument('--num_point', type=int, default=32768, help='Point number [default: 4096]')
 parser.add_argument('--model_path', required=True, help='model checkpoint file path')
 parser.add_argument('--dump_dir', required=True, help='dump folder path')
 parser.add_argument('--output_filelist', required=True, help='TXT filename, filelist, each line is an output for a room')
@@ -105,20 +105,24 @@ def eval_one_epoch(sess, ops, room_path, out_data_label_filename):  # , out_gt_l
     total_seen_class = [0 for _ in range(NUM_CLASSES)]
     # total_correct_class = [0 for _ in range(NUM_CLASSES)]
     if FLAGS.visu:
-        fout = open(os.path.join(DUMP_DIR, os.path.basename(room_path)[:-4]+'_pred.obj'), 'w')
+        fout = open(os.path.join(DUMP_DIR, os.path.basename(room_path)[:-4]+'_pred.obj') , 'w')
         # fout_gt = open(os.path.join(DUMP_DIR, os.path.basename(room_path)[:-4]+'_gt.obj'), 'w')
     fout_data_label = open(out_data_label_filename, 'w')
     # fout_gt_label = open(out_gt_label_filename, 'w')
 
     # load .ply mesh file containing xyz and rgb values
-    block_size = 0.5
-    stride = 0.5
+    block_size = 1
+    stride = 1
     random_sample = False
-    sample_num = 100
+    sample_num = 1
     sample_aug = 0
-    mesh = data_prep_util.load_ply_data_rgba('/home/ben/Downloads/mesh_15k_cluster_txt.ply', 10000)  # TODO: use command line arg instead of hard-coded file
+    input_point_cloud_path = '/home/ben/Downloads/2017-09-05_14-27-06/pointcloud_1244k.ply'
+    mesh = data_prep_util.load_ply_data_rgb(input_point_cloud_path, 1179648)  # TODO: use command line arg instead of hard-coded file; use load_ply_data_rgb OR rgba
     current_data, current_label = indoor3d_util.room2blocks_plus_normalized(mesh, NUM_POINT, block_size, stride,
                                                                             random_sample, sample_num, sample_aug)
+
+    # current_data, current_label = indoor3d_util.room2samples_plus_normalized(mesh, NUM_POINT, block_size, stride,
+    #                                                                         random_sample, sample_num, sample_aug)
     current_data = current_data[:,0:NUM_POINT,:]
     # current_label = np.squeeze(current_label)
     # Get room dimension..
